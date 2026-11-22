@@ -13,10 +13,10 @@ const UPCOMING_BILLS_LIMIT = 7;
 
 function SummaryCard({ label, value, detail }: { label: string; value: string; detail?: string }) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-4">
-      <p className="text-sm text-gray-600">{label}</p>
-      <p className="mt-1 text-xl font-semibold text-gray-900">{value}</p>
-      {detail && <p className="mt-1 text-xs text-gray-500">{detail}</p>}
+    <div className="ui-card group p-5 transition duration-200 hover:-translate-y-0.5 hover:border-indigo-200 hover:shadow-[0_16px_40px_rgba(79,70,229,0.08)]">
+      <p className="text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">{label}</p>
+      <p className="mt-3 text-2xl font-bold tracking-tight text-slate-950">{value}</p>
+      {detail && <p className="mt-2 text-xs leading-5 text-slate-500">{detail}</p>}
     </div>
   );
 }
@@ -44,8 +44,8 @@ export default async function DashboardPage() {
 
   return (
     <AppShell>
-      <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-      <p className="mt-1 text-gray-600">{profile.businessName}</p>
+      <h1 className="ui-page-title">Dashboard</h1>
+      <p className="mt-1 text-sm font-medium text-slate-500">{profile.businessName}</p>
 
       <section className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <SummaryCard
@@ -80,55 +80,58 @@ export default async function DashboardPage() {
         />
       </section>
 
-      <section className="mt-6 rounded-lg border border-gray-200 bg-white p-4">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+      <section className="ui-card mt-6 p-5 sm:p-6">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">30-day cash outlook</h2>
-            <p className="text-sm text-gray-600">
+            <h2 className="text-base font-bold text-slate-950">30-day cash outlook</h2>
+            <p className="mt-1 text-sm text-slate-500">
               Day-end projection from recorded cash, expected receipts and unpaid bills.
             </p>
           </div>
-          <Link href="/forecast?horizon=30" className="text-sm font-medium text-gray-900 underline">
-            Open full forecast
+          <Link href="/forecast?horizon=30" className="ui-primary-button">
+            Open forecast
           </Link>
         </div>
         <ForecastChart points={forecast.points} horizonDays={30} />
       </section>
 
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <section className="rounded-lg border border-gray-200 bg-white lg:col-span-2">
-          <h2 className="border-b border-gray-200 px-4 py-3 text-base font-semibold text-gray-900">
-            Who owes money
-          </h2>
+        <section className="ui-card overflow-hidden lg:col-span-2">
+          <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+            <div>
+              <h2 className="text-base font-bold text-slate-950">Who owes money</h2>
+              <p className="mt-0.5 text-xs text-slate-500">Open receivables and due dates</p>
+            </div>
+          </div>
           {receivables.length === 0 ? (
             <p className="p-4 text-sm text-gray-700">Nothing is owed right now.</p>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 text-sm">
-                <thead className="bg-gray-50 text-left text-gray-600">
+              <table className="min-w-full text-sm">
+                <thead className="bg-slate-50/80 text-left text-xs font-bold uppercase tracking-wider text-slate-400">
                   <tr>
-                    <th scope="col" className="px-4 py-2 font-medium">Customer</th>
-                    <th scope="col" className="px-4 py-2 font-medium">Invoice</th>
-                    <th scope="col" className="px-4 py-2 text-right font-medium">Outstanding</th>
-                    <th scope="col" className="px-4 py-2 font-medium">Due date</th>
-                    <th scope="col" className="px-4 py-2 font-medium">Days overdue</th>
+                    <th scope="col" className="px-5 py-3">Customer</th>
+                    <th scope="col" className="px-5 py-3">Invoice</th>
+                    <th scope="col" className="px-5 py-3 text-right">Outstanding</th>
+                    <th scope="col" className="px-5 py-3">Due date</th>
+                    <th scope="col" className="px-5 py-3">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-slate-100">
                   {receivables.map((row) => (
-                    <tr key={row.id}>
-                      <td className="px-4 py-2 text-gray-900">{row.customer.name}</td>
-                      <td className="px-4 py-2">
-                        <Link href={`/invoices/${row.id}`} className="text-gray-900 underline">
+                    <tr key={row.id} className="transition hover:bg-slate-50/70">
+                      <td className="px-5 py-3.5 font-semibold text-slate-900">{row.customer.name}</td>
+                      <td className="px-5 py-3.5">
+                        <Link href={`/invoices/${row.id}`} className="font-semibold text-indigo-600 hover:text-indigo-800">
                           {row.invoiceNumber}
                         </Link>
                       </td>
-                      <td className="px-4 py-2 text-right text-gray-900">
-                        {formatINR(row.outstandingPaise)}
-                      </td>
-                      <td className="px-4 py-2 text-gray-700">{row.dueDate}</td>
-                      <td className="px-4 py-2 text-gray-700">
-                        {row.overdue ? row.overdueDays : "Not yet due"}
+                      <td className="px-5 py-3.5 text-right font-bold text-slate-950">{formatINR(row.outstandingPaise)}</td>
+                      <td className="px-5 py-3.5 text-slate-500">{row.dueDate}</td>
+                      <td className="px-5 py-3.5">
+                        <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${row.overdue ? "bg-rose-50 text-rose-700" : "bg-emerald-50 text-emerald-700"}`}>
+                          {row.overdue ? `${row.overdueDays}d overdue` : "Not yet due"}
+                        </span>
                       </td>
                     </tr>
                   ))}
@@ -138,27 +141,24 @@ export default async function DashboardPage() {
           )}
         </section>
 
-        <section className="rounded-lg border border-gray-200 bg-white">
-          <h2 className="border-b border-gray-200 px-4 py-3 text-base font-semibold text-gray-900">
-            Action Center
-          </h2>
+        <section className="ui-card overflow-hidden">
+          <div className="border-b border-slate-100 px-5 py-4">
+            <h2 className="text-base font-bold text-slate-950">Action Center</h2>
+            <p className="mt-0.5 text-xs text-slate-500">Priorities for today</p>
+          </div>
           {alerts.length === 0 ? (
-            <p className="p-4 text-sm text-gray-700">No alerts. Nothing needs action today.</p>
+            <p className="p-5 text-sm text-slate-600">No alerts. Nothing needs action today.</p>
           ) : (
-            <ul className="divide-y divide-gray-100">
+            <ul className="divide-y divide-slate-100">
               {alerts.map((alert) => (
-                <li key={alert.id} className="p-4">
-                  <p
-                    className={`text-sm font-medium ${
-                      alert.severity === "critical" ? "text-red-700" : "text-amber-800"
-                    }`}
-                  >
+                <li key={alert.id} className="p-5">
+                  <p className={`text-sm font-bold ${alert.severity === "critical" ? "text-rose-700" : "text-amber-700"}`}>
                     {alert.headline}
                   </p>
-                  <p className="mt-1 text-sm text-gray-700">{alert.explanation}</p>
+                  <p className="mt-1.5 text-sm leading-5 text-slate-600">{alert.explanation}</p>
                   <Link
                     href={alert.actionHref}
-                    className="mt-2 inline-block rounded-md border border-gray-300 bg-white px-3 py-1 text-sm font-medium text-gray-900 hover:bg-gray-50"
+                    className="mt-3 inline-flex rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-800 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
                   >
                     {alert.actionLabel}
                   </Link>
@@ -169,11 +169,14 @@ export default async function DashboardPage() {
         </section>
       </div>
 
-      <section className="mt-6 rounded-lg border border-gray-200 bg-white">
-        <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
-          <h2 className="text-base font-semibold text-gray-900">Upcoming bills (next 7 days)</h2>
-          <Link href="/bills" className="text-sm text-gray-700 underline">
-            All bills
+      <section className="ui-card mt-6 overflow-hidden">
+        <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+          <div>
+            <h2 className="text-base font-bold text-slate-950">Upcoming bills</h2>
+            <p className="mt-0.5 text-xs text-slate-500">Next 7 days</p>
+          </div>
+          <Link href="/bills" className="text-sm font-semibold text-indigo-600 hover:text-indigo-800">
+            View all
           </Link>
         </div>
         {upcomingBills.length === 0 ? (

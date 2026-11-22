@@ -3,9 +3,57 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --ink: 18 25 38;
+    --muted: 100 116 139;
+    --line: 226 232 240;
+    --surface: 255 255 255;
+    --brand: 79 70 229;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
   body {
-    background: #f7f7f5;
-    color: #1f2328;
-    font-family: system-ui, sans-serif;
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at 8% 8%, rgba(99, 102, 241, 0.24), transparent 25rem),
+      radial-gradient(circle at 92% 10%, rgba(168, 85, 247, 0.20), transparent 24rem),
+      radial-gradient(circle at 78% 88%, rgba(34, 211, 238, 0.16), transparent 26rem),
+      radial-gradient(circle at 18% 92%, rgba(16, 185, 129, 0.15), transparent 26rem),
+      radial-gradient(circle at 50% 45%, rgba(251, 191, 36, 0.06), transparent 22rem),
+      linear-gradient(135deg, #eef2ff 0%, #f8fafc 38%, #ecfeff 68%, #f0fdf4 100%);
+    background-attachment: fixed;
+    color: rgb(var(--ink));
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+
+  button, input, select, textarea { font: inherit; }
+
+  ::selection { background: rgba(99, 102, 241, 0.18); }
+}
+
+@layer components {
+  .ui-card {
+    @apply rounded-2xl border border-indigo-200/50 bg-indigo-50/55 shadow-[0_1px_2px_rgba(15,23,42,0.03),0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur-md;
+  }
+
+  .ui-page-title {
+    @apply text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl;
+  }
+
+  .ui-primary-button {
+    @apply inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
+  }
+
+  /* Make the entire interface tint-based instead of white. */
+  body [class*="bg-white"] {
+    background-color: rgba(238, 242, 255, 0.82) !important;
+    background-image: linear-gradient(135deg, rgba(224, 231, 255, 0.38), rgba(236, 254, 255, 0.24)) !important;
+  }
+
+  body [class*="border-white"] {
+    border-color: rgba(199, 210, 254, 0.65) !important;
   }
 }
