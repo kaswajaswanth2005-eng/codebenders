@@ -1,0 +1,120 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model BusinessProfile {
+  id                  String    @id
+  businessName        String
+  ownerName           String
+  email               String?
+  phone               String?
+  address             String?
+  currency            String    @default("INR")
+  openingCashPaise    Int
+  openingCashDate     String
+  paymentInstructions String?
+  aiConsentAt         DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+model Customer {
+  id          String    @id @default(cuid())
+  name        String
+  companyName String?
+  email       String?
+  phone       String?
+  address     String?
+  notes       String?
+  archivedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  invoices    Invoice[]
+
+  @@index([name])
+}
+
+model Invoice {
+  id                     String           @id @default(cuid())
+  invoiceNumber          String           @unique
+  customerId             String
+  customer               Customer         @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  lifecycle              String           @default("DRAFT")
+  issueDate              String
+  dueDate                String
+  expectedCollectionDate String?
+  notes                  String?
+  paymentInstructions    String?
+  items                  InvoiceItem[]
+  payments               InvoicePayment[]
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+
+  @@index([customerId, dueDate])
+  @@index([lifecycle, dueDate])
+}
+
+model InvoiceItem {
+  id              String  @id @default(cuid())
+  invoiceId       String
+  invoice         Invoice @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  description     String
+  quantityMilli   Int
+  unitPricePaise  Int
+  lineTotalPaise  Int
+  sortOrder       Int     @default(0)
+
+  @@index([invoiceId])
+}
+
+model InvoicePayment {
+  id              String   @id @default(cuid())
+  invoiceId       String
+  invoice         Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
+  amountPaise     Int
+  paymentDate     String
+  method          String
+  referenceNumber String?
+  notes           String?
+  idempotencyKey  String   @unique
+  createdAt       DateTime @default(now())
+
+  @@index([invoiceId, paymentDate])
+}
+
+model Bill {
+  id                 String           @id @default(cuid())
+  title              String
+  category           String
+  defaultAmountPaise Int
+  firstDueDate       String
+  recurrence         String           @default("NONE")
+  notes              String?
+  archivedOn         String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  occurrences        BillOccurrence[]
+
+  @@index([firstDueDate])
+}
+
+model BillOccurrence {
+  id          String   @id @default(cuid())
+  billId      String
+  bill        Bill     @relation(fields: [billId], references: [id], onDelete: Restrict)
+  dueDate     String
+  amountPaise Int
+  paidDate    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([billId, dueDate])
+  @@index([paidDate])
+}
+
+
